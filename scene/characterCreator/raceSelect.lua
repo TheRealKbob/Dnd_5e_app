@@ -5,7 +5,7 @@
 -----------------------------------------------------------------------------------------
 local composer = require 'composer'
 local scene = composer.newScene()
-local widget = require 'widget'
+local snappingScrollView = require 'com.components.snappingScrollView'
 local raceFactory = require 'com.dnd5e.race.factory'
 
 local nextButton
@@ -21,24 +21,27 @@ end
 function scene:create( event )
   local sceneGroup = self.view
 
-  local raceList = widget.newScrollView( {
+  local raceList = snappingScrollView:create( {
     top = 0,
     left = 0,
     width = display.contentWidth,
-    height = display.contentHeight,
-    horizontalScrollDisabled = true,
-    isBounceEnabled = false,
+    height = display.contentWidth,
+    verticalScrollDisabled = true,
+    -- isBounceEnabled = false,
     backgroundColor = { 0.5, 0.5, 0.5 }
   } )
 
   sceneGroup:insert( raceList )
 
-  print( raceFactory )
-
-  local i = 1
+  local i = 0
   for k, v in pairs( raceFactory ) do
-    local testCircle = display.newCircle( display.contentCenterX, i * 220, 100 )
-    raceList:insert( testCircle )
+    local testRect = display.newRect( ( display.contentWidth / 2 ) + ( display.contentWidth * i ), raceList.height / 2, raceList.width, raceList.height )
+    local testNum = display.newText( ( i + 1 ), ( display.contentWidth / 2 ) + ( display.contentWidth * i ), raceList.height / 2, native.systemFont, 44 )
+    testNum:setFillColor( 0, 0, 0 )
+    testRect.strokeWidth = 3
+    testRect:setStrokeColor( 1, 0, 0 )
+    raceList:insert( testRect )
+    raceList:insert( testNum )
     i = i + 1
   end
 
