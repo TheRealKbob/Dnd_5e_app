@@ -5,43 +5,72 @@
 -----------------------------------------------------------------------------------------
 local composer = require 'composer'
 local scene = composer.newScene()
-local snappingScrollView = require 'com.components.snappingScrollView'
+local components = require 'components'
 local raceFactory = require 'com.dnd5e.race.factory'
 
 local nextButton
 
-function gotoNext()
+-----------------------------------------------------------------------------------------
+-- Functions
+-----------------------------------------------------------------------------------------
+local function newRaceSelector( description, image, x, y, width, height )
+  local group = display.newGroup()
+  local bg = display.newRect( width / 2, height / 2, width, height )
+  group:insert( bg )
+  local descriptionText = display.newText( group, description, width / 2, height - 100, width * 0.9, 100, native.systemFont, 24 )
+  descriptionText:setFillColor( 0, 0, 0 )
+  group.x = x
+  group.y = y
+  return group
+end
+
+local function gotoNext()
   composer.hideOverlay( 'slideLeft', 400 )
 end
 
-function gotoPrevious()
+local function gotoPrevious()
   composer.hideOverlay( 'slideRight', 400 )
 end
 
+-----------------------------------------------------------------------------------------
+-- Scene
+-----------------------------------------------------------------------------------------
 function scene:create( event )
   local sceneGroup = self.view
 
-  local raceList = snappingScrollView:create( {
-    top = 0,
+  local raceList = components.newSnappingScrollView( {
+    top = 30,
     left = 0,
-    width = display.contentWidth,
-    height = display.contentWidth,
+    width = display.viewableContentWidth,
+    height = display.viewableContentHeight * 0.55,
     verticalScrollDisabled = true,
-    -- isBounceEnabled = false,
+    isBounceEnabled = false,
     backgroundColor = { 0.5, 0.5, 0.5 }
   } )
-
   sceneGroup:insert( raceList )
+
+  local subraceList = components.newSnappingScrollView( {
+    top = ( raceList.y - raceList.height / 2 ) + raceList.height + 5,
+    left = 0,
+    width = display.contentWidth,
+    height = display.contentHeight * 0.2,
+    verticalScrollDisabled = true,
+    isBounceEnabled = false,
+    backgroundColor = { 0.6, 0.6, 0.6 }
+  } )
+  sceneGroup:insert( subraceList )
 
   local i = 0
   for k, v in pairs( raceFactory ) do
-    local testRect = display.newRect( ( display.contentWidth / 2 ) + ( display.contentWidth * i ), raceList.height / 2, raceList.width, raceList.height )
-    local testNum = display.newText( ( i + 1 ), ( display.contentWidth / 2 ) + ( display.contentWidth * i ), raceList.height / 2, native.systemFont, 44 )
-    testNum:setFillColor( 0, 0, 0 )
-    testRect.strokeWidth = 3
-    testRect:setStrokeColor( 1, 0, 0 )
-    raceList:insert( testRect )
-    raceList:insert( testNum )
+    local g = newRaceSelector( v.description, nil, ( i *  raceList.width ), 0, raceList.width, raceList.height )
+    raceList:insert( g )
+    i = i + 1
+  end
+
+  local i = 0
+  for k, v in pairs( raceFactory ) do
+    local g = newRaceSelector( v.description, nil, ( i *  subraceList.width ), 0, subraceList.width, subraceList.height )
+    subraceList:insert( g )
     i = i + 1
   end
 

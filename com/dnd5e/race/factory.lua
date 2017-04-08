@@ -1,5 +1,5 @@
-local race = require 'com.dnd.race'
-local human = require 'com.dnd.race.human'
+local race = require 'com.dnd5e.race'
+local human = require 'com.dnd5e.race.human'
 
 local _M = {}
 _M[ 'human' ] = human:create()
